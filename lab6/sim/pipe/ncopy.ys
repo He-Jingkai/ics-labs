@@ -1,0 +1,187 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+
+#########################################################################################################################################################
+# Include your name and ID here.
+# He Jingkai 519021910187
+#########################################################################################################################################################
+# Describe how and why you modified the baseline code.
+
+# First of all, I change every irmove-addq to iaddq, that reduces CPE to 12.xx ,0 points, however
+
+# then, I put iaddq $8, %rsi and iaddq $8, %rdi between mrmovq (%rdi), %r10 and rmmovq %r10,-8(%rsi)
+# to eliminate load-use hazzard, which reduces CPE to almost 11.xx, 0 points too
+
+# Then it hits me that reduces jump can reduces bubbles, which will reduces CPE, so I make the cycle moves three elements at most per cycle, which reduces CPE to 9.xx 
+
+# The above modify causes new load use hazzard, so I use more registers and put mrmovq (%rdi), %r10 together, which ruduces CPE to 8.xx
+
+#
+##########################################################################################################################################################
+ncopy:
+Check:
+
+	iaddq $-6,%rdx
+	jl Loop1
+	
+	
+
+Loop6:	
+	mrmovq (%rdi), %r10
+	mrmovq 8(%rdi), %r11
+	mrmovq 16(%rdi), %r12
+	mrmovq 24(%rdi), %r13
+	mrmovq 32(%rdi), %r14
+	mrmovq 40(%rdi), %r9
+	iaddq $48, %rsi
+	iaddq $48, %rdi
+	
+	andq %r10, %r10
+	jle Npos61
+	iaddq $1, %rax
+Npos61:
+    rmmovq %r10, -48(%rsi)
+	andq %r11, %r11
+	jle Npos62
+	iaddq $1, %rax
+Npos62:
+    rmmovq %r11, -40(%rsi)
+	andq %r12, %r12
+	jle Npos63
+	iaddq $1, %rax
+Npos63:
+    rmmovq %r12, -32(%rsi)
+	andq %r13, %r13
+	jle Npos64
+	iaddq $1, %rax
+Npos64:
+    rmmovq %r13, -24(%rsi)
+	andq %r14, %r14
+	jle Npos65
+	iaddq $1, %rax
+Npos65:
+    rmmovq %r14, -16(%rsi)
+	andq %r9, %r9
+	rmmovq %r9, -8(%rsi)
+	jle Check
+	iaddq $1, %rax
+	jmp Check
+
+Loop5:	
+	mrmovq (%rdi), %r10
+	mrmovq 8(%rdi), %r11
+	mrmovq 16(%rdi), %r12
+	mrmovq 24(%rdi), %r13
+	mrmovq 32(%rdi), %r14
+
+	andq %r10, %r10
+	jle Npos51
+	iaddq $1, %rax
+Npos51:
+    rmmovq %r10, (%rsi)
+	andq %r11, %r11
+	jle Npos52
+	iaddq $1, %rax
+Npos52:
+    rmmovq %r11, 8(%rsi)
+	andq %r12, %r12
+	jle Npos53
+	iaddq $1, %rax
+Npos53:
+    rmmovq %r12, 16(%rsi)
+	andq %r13, %r13
+	jle Npos54
+	iaddq $1, %rax
+Npos54:
+    rmmovq %r13, 24(%rsi)
+	andq %r14, %r14
+	rmmovq %r14, 32(%rsi)
+	jle Ret
+	iaddq $1, %rax
+	ret
+
+Loop4:	
+	iaddq $-1,%rdx
+	jg Loop5
+	mrmovq (%rdi), %r10
+	mrmovq 8(%rdi), %r11
+	mrmovq 16(%rdi), %r12
+	mrmovq 24(%rdi), %r13	
+	andq %r10, %r10
+	jle Npos41
+	iaddq $1, %rax
+Npos41:
+    rmmovq %r10, (%rsi)
+	andq %r11, %r11
+	jle Npos42
+	iaddq $1, %rax
+Npos42:
+    rmmovq %r11, 8(%rsi)
+	andq %r12, %r12
+	jle Npos43
+	iaddq $1, %rax
+Npos43:
+    rmmovq %r12, 16(%rsi)
+	andq %r13, %r13
+	rmmovq %r13, 24(%rsi)
+	jle Ret
+	iaddq $1, %rax
+	ret
+
+Loop3:
+    iaddq $-1,%rdx
+	jg Loop4
+	mrmovq (%rdi), %r10
+	mrmovq 8(%rdi), %r11
+	mrmovq 16(%rdi), %r12
+	andq %r10, %r10
+	jle Npos31
+	iaddq $1, %rax
+Npos31:
+    rmmovq %r10, (%rsi)
+	andq %r11, %r11
+	jle Npos32
+	iaddq $1, %rax
+Npos32:
+    rmmovq %r11, 8(%rsi)
+	andq %r12, %r12
+	rmmovq %r12, 16(%rsi)
+	jle Ret
+	iaddq $1, %rax
+	ret
+
+Loop2:	
+    iaddq $-1,%rdx
+	jg Loop3
+	mrmovq (%rdi), %r10
+	mrmovq 8(%rdi), %r11
+	rmmovq %r10, (%rsi)
+	rmmovq %r11, 8(%rsi)
+	andq %r10, %r10
+	jle Npos21
+	iaddq $1, %rax
+Npos21:
+	andq %r11, %r11
+	jle Ret
+	iaddq $1, %rax
+    ret
+
+Loop1:
+    iaddq $5,%rdx
+	
+	jg Loop2
+	jl Ret
+	mrmovq (%rdi), %r10
+	andq %r10, %r10
+	jle Npos11
+	iaddq $1, %rax
+Npos11:
+	rmmovq %r10, (%rsi)
+    ret
+Ret:
+ ret
+
+End:
+

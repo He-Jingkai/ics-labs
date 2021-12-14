@@ -1,0 +1,50 @@
+# He Jingkai 519021910187
+.pos 0
+irmovq stack,%rsp
+call main
+halt
+
+.align 8
+ele1:
+	.quad 0x00a
+	.quad ele2
+ele2:
+	.quad 0x0b0
+	.quad ele3
+ele3:
+	.quad 0xc00
+	.quad 0
+	
+main:
+irmovq ele1,%rdi
+call rsum_list
+ret
+
+rsum_list:
+irmovq $0x0,%rax
+irmovq $0x8,%rdx
+irmovq $0x0,%r8
+
+subq %r8,%rdi
+je L1
+
+pushq %r10
+#
+mrmovq (%rdi),%r10
+
+addq %rdx,%rdi
+mrmovq (%rdi),%rdi
+call rsum_list
+
+addq %r10,%rax
+#
+popq %r10
+ret
+
+L1:
+irmovq $0x0,%rax
+ret
+
+.pos 500
+stack:
+
